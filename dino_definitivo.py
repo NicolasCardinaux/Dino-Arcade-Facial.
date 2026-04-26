@@ -199,7 +199,7 @@ class CamHandler(BaseHTTPRequestHandler):
             <head>
                 <meta charset="UTF-8">
                 <style>
-                    body, html { zoom: 0.82; margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f7f7f7; font-family: Arial, sans-serif; }
+                    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f7f7f7; font-family: Arial, sans-serif; }
                     
                     /* Transiciones suaves para el modo noche */
                     body, html, #game-container, #bottom-cover, #pip, #leaderboard-container, #instructions-container { 
@@ -1205,7 +1205,7 @@ if __name__ == '__main__':
     server_thread.start()
     
     time.sleep(1)
-    window = webview.create_window('Dino de Chrome - Integrado Definitivo', 'http://localhost:8080', width=1000, height=580, resizable=False)
+    window = webview.create_window('Dino de Chrome - Integrado Definitivo', 'http://localhost:8080', width=1200, height=650, resizable=False)
     webview.start()
 
     # Graceful shutdown to prevent MediaPipe __del__ errors
