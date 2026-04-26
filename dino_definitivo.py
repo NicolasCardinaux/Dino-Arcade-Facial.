@@ -199,7 +199,7 @@ class CamHandler(BaseHTTPRequestHandler):
             <head>
                 <meta charset="UTF-8">
                 <style>
-                    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f7f7f7; font-family: Arial, sans-serif; }
+                    body, html { zoom: 0.98; margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f7f7f7; font-family: Arial, sans-serif; }
                     
                     /* Transiciones suaves para el modo noche */
                     body, html, #game-container, #bottom-cover, #pip, #leaderboard-container, #instructions-container { 
