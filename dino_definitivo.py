@@ -835,9 +835,6 @@ class CamHandler(BaseHTTPRequestHandler):
                             }
                             doCalibrate();
                         }
-                        if (e.key.toLowerCase() === 'z') {
-                            doClose();
-                        }
                     });
                     
                     window.onload = function() {
