@@ -1016,7 +1016,7 @@ class CamHandler(BaseHTTPRequestHandler):
                         <li>Presiona el botón verde <b>CALIBRAR</b> (o la letra <span class="instr-highlight">C</span>).</li>
                         <li>Para <b>SALTAR</b>: <span class="instr-highlight">Abre la boca</span>.</li>
                         <li>Para <b>AGACHARTE</b>: <span class="instr-highlight">Baja un poco la cabeza</span>.</li>
-                        <li>Para <b>REINTENTAR</b>: <span class="instr-highlight">Muestra la palma</span>.</li>
+                        <li>Para <b>JUGAR DE NUEVO</b>: <span class="instr-highlight">Muestra la palma</span>.</li>
                         <li>¡Diviértete!</li>
                         <li>Al terminar, pulsa <b>PAUSAR</b> y luego <b>NUEVO JUGADOR</b> para guardar tu récord.</li>
                     </ol>
