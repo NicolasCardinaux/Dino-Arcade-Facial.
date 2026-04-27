@@ -215,7 +215,7 @@ class CamHandler(BaseHTTPRequestHandler):
                     
                     /* Iframe local: No hay problemas de CORS */
                     iframe { 
-                        width: 820px; 
+                        width: 835px; 
                         height: 260px; /* Altura restringida para que el canvas se centre correctamente */
                         border: none; 
                         position: absolute;
@@ -404,7 +404,7 @@ class CamHandler(BaseHTTPRequestHandler):
                     
                     /* Game Over Overlay */
                     #game-over-overlay {
-                        position: absolute; top: 0px; left: 430px; transform: translateX(-50%); 
+                        position: absolute; top: 0px; left: 437px; transform: translateX(-50%); 
                         width: max-content; padding: 0 5px; height: 260px;
                         z-index: 2; display: none; align-items: center; justify-content: center;
                         flex-direction: column; background: var(--bg-color, #f7f7f7);
@@ -417,7 +417,7 @@ class CamHandler(BaseHTTPRequestHandler):
                     
                     /* Título Principal */
                     #main-title {
-                        position: absolute; top: 20px; left: 20px; width: 820px; text-align: center;
+                        position: absolute; top: 20px; left: 20px; width: 835px; text-align: center;
                         z-index: 20; pointer-events: none; transition: opacity 0.5s ease, top 0.5s ease, transform 0.5s ease, background 0.5s ease, border-radius 0.5s ease;
                         transform-origin: top center;
                         background: var(--bg-color, #f7f7f7);
