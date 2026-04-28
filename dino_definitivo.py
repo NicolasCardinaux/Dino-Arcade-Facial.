@@ -159,11 +159,13 @@ class CamHandler(BaseHTTPRequestHandler):
                 scores.sort(key=lambda x: x['score'], reverse=True)
                 save_ranking(scores)
 
-            
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(scores).encode('utf-8'))
+            try:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(scores).encode('utf-8'))
+            except Exception:
+                pass
         elif self.path == '/reset':
             global game_started
             calibrated = False
@@ -295,6 +297,7 @@ class CamHandler(BaseHTTPRequestHandler):
                     .btn:hover { background: #f0f0f0; }
                     .btn-pause { border-color: #ff9800; color: #e65100; }
                     .btn-reset { border-color: #2196f3; color: #0d47a1; }
+                    .btn-practice { border-color: #9c27b0; color: #7b1fa2; }
                     .btn-calibrate { border-color: #4CAF50; color: white; background: #4CAF50; }
                     .btn-calibrate:hover { background: #388E3C !important; }
                     .btn-close { border-color: #d32f2f; color: white; background: #f44336; }
@@ -551,6 +554,7 @@ class CamHandler(BaseHTTPRequestHandler):
                     let currentPlayerInstitution = "";
                     let currentPlayerMaxScore = 0;
                     let isPlayerRegistered = false;
+                    let isPracticeMode = false;
                     let globalScores = [];
                     let hasGameStartedUI = false;
                     let isGameOver = false;
@@ -765,22 +769,61 @@ class CamHandler(BaseHTTPRequestHandler):
                     function togglePause() {
                         var btn = document.getElementById('btn-pause');
                         var btnReset = document.getElementById('btn-reset');
+                        
+                        let iframe = document.querySelector('iframe');
+                        let runner = iframe.contentWindow && iframe.contentWindow.Runner ? iframe.contentWindow.Runner.instance_ : null;
+
                         if (btn.innerText === "PAUSAR") {
                             btn.innerText = "REANUDAR";
                             btnReset.disabled = false;
                             btnReset.style.opacity = "1";
                             fetch('/pause?state=1');
+                            
+                            if (runner && runner.playing) {
+                                runner.stop();
+                            }
                         } else {
                             btn.innerText = "PAUSAR";
                             btnReset.disabled = true;
                             btnReset.style.opacity = "0.5";
                             fetch('/pause?state=0');
+                            
+                            if (runner && !runner.playing && !runner.crashed) {
+                                runner.play();
+                            }
                         }
-                        document.querySelector('iframe').focus();
+                        iframe.focus();
+                    }
+
+                    function togglePractice() {
+                        if (!isPracticeMode) {
+                            isPracticeMode = true;
+                            let btn = document.getElementById('btn-practice');
+                            let nameInput = document.getElementById('player-name');
+                            let instInput = document.getElementById('player-institution');
+                            let btnAdd = document.getElementById('btn-add-player');
+                            let calBtn = document.getElementById('btn-calibrate');
+
+                            btn.innerText = "PRÁCTICA EN CURSO";
+                            btn.style.background = "#e1bee7";
+                            nameInput.disabled = true;
+                            if(instInput) instInput.disabled = true;
+                            btnAdd.disabled = true;
+                            
+                            calBtn.disabled = false;
+                            calBtn.style.opacity = "1";
+                            
+                            isPlayerRegistered = true;
+                            showToast("Modo práctica activado. Puntajes no se guardarán.");
+                            document.querySelector('iframe').focus();
+                        } else {
+                            doReset();
+                            showToast("Modo práctica desactivado. Por favor, ingresá un nombre para jugar.");
+                        }
                     }
 
                     function doReset() {
-                        if (isPlayerRegistered && currentPlayerMaxScore > 0) {
+                        if (isPlayerRegistered && currentPlayerMaxScore > 0 && !isPracticeMode) {
                             saveScore(currentPlayerName, currentPlayerInstitution, currentPlayerMaxScore);
                         }
                         
@@ -788,6 +831,15 @@ class CamHandler(BaseHTTPRequestHandler):
                         currentPlayerInstitution = "";
                         currentPlayerMaxScore = 0;
                         isPlayerRegistered = false;
+                        
+                        if (isPracticeMode) {
+                            let btnPrac = document.getElementById('btn-practice');
+                            if (btnPrac) {
+                                isPracticeMode = false;
+                                btnPrac.innerText = "PRÁCTICA";
+                                btnPrac.style.background = "";
+                            }
+                        }
                         
                         let nameInput = document.getElementById('player-name');
                         let instInput = document.getElementById('player-institution');
@@ -920,7 +972,22 @@ class CamHandler(BaseHTTPRequestHandler):
                             }
 
                             if (!runner._hijackedEvents) {
+                                let originalPlay = runner.play;
+                                runner.play = function() {
+                                    let btnPause = document.getElementById('btn-pause');
+                                    if (btnPause && btnPause.innerText === "REANUDAR") {
+                                        return; // No reanudar si está pausado manualmente
+                                    }
+                                    originalPlay.call(this);
+                                };
+
                                 iframe.contentWindow.addEventListener('keydown', function(e) {
+                                    let btnPause = document.getElementById('btn-pause');
+                                    if (btnPause && btnPause.innerText === "REANUDAR") {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        return;
+                                    }
                                     if (runner.crashed) {
                                         if (e.keyCode === 13) {
                                             e.stopPropagation();
@@ -941,6 +1008,12 @@ class CamHandler(BaseHTTPRequestHandler):
                                 }, true); // true = capture phase
                                 
                                 iframe.contentWindow.addEventListener('keyup', function(e) {
+                                    let btnPause = document.getElementById('btn-pause');
+                                    if (btnPause && btnPause.innerText === "REANUDAR") {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        return;
+                                    }
                                     if (runner.crashed) {
                                         if (e.keyCode === 32 || e.keyCode === 38 || e.keyCode === 13) {
                                             e.stopPropagation();
@@ -969,7 +1042,16 @@ class CamHandler(BaseHTTPRequestHandler):
                                 goRecord.innerText = score;
                                 document.querySelector('.go-retry').innerText = "¡MOSTRÁ LA PALMA ABIERTA PARA REINTENTAR!";
                                 
-                                if (isPlayerRegistered && score > currentPlayerMaxScore) {
+                                if (isPracticeMode) {
+                                    let pracMsgs = [
+                                        "¡REGISTRATE PARA JUGAR! 📝", 
+                                        "¡DESACTIVÁ LA PRÁCTICA! 🏆", 
+                                        "¡A JUGAR EN SERIO! 🔥", 
+                                        "¡DEJÁ TU MARCA! 🥇",
+                                        "¡FIN DEL CALENTAMIENTO! 🚀"
+                                    ];
+                                    goTitle.innerText = pracMsgs[Math.floor(Math.random() * pracMsgs.length)];
+                                } else if (isPlayerRegistered && score > currentPlayerMaxScore) {
                                     currentPlayerMaxScore = score;
                                     goTitle.innerText = "🎉 NUEVO RÉCORD 🎉";
                                 } else {
@@ -1063,6 +1145,10 @@ class CamHandler(BaseHTTPRequestHandler):
                     <div id="controls">
                         <button id="btn-pause" class="btn btn-pause" onclick="togglePause()">PAUSAR</button>
                         <button id="btn-reset" class="btn btn-reset" onclick="doReset()" style="opacity: 0.5;" disabled>NUEVO JUGADOR</button>
+                    </div>
+                    <button id="btn-practice" class="btn btn-practice" onclick="togglePractice()">PRÁCTICA</button>
+                    <div style="font-size: 11.5px; text-align: center; background: #e3f2fd; color: #0d47a1; padding: 8px; border-radius: 6px; margin-top: 5px; margin-bottom: 5px; border: 1px solid #bbdefb; line-height: 1.3;">
+                        <b>Modo Práctica:</b> Jugá libremente sin guardar puntaje. Para registrar tu récord con tu nombre, volvé a apretar el botón para desactivarlo.
                     </div>
                     <button class="btn-close btn" onclick="doClose()">FINALIZAR JUEGO</button>
                 </div>

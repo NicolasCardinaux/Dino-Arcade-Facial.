@@ -12,6 +12,7 @@ Este proyecto fue creado y optimizado para ser utilizado en presentaciones en vi
   - **Reintentar (Game Over):** Muestra la palma de tu mano abierta a la cámara.
 - **Renderizado Local Sin Lag:** Integra una copia íntegra de `t-rex-runner` dentro de una interfaz Webview nativa, sirviendo los archivos a través de un servidor HTTP local para evadir bloqueos de internet y problemas de latencia.
 - **Top 3 de Jugadores (Leaderboard):** Incluye un ranking persistente guardado en un archivo físico (`ranking.json`). El puntaje máximo del jugador se guarda de forma estricta únicamente al finalizar su turno, protegiendo la integridad de la competencia.
+- **Modo Práctica:** Un botón dedicado permite iniciar el juego rápidamente y calentar sin necesidad de registrar un nombre, asegurando que los puntajes de prueba no se guarden en el ranking oficial.
 - **Música Retro Exclusiva:** El juego incluye una pista de música de fondo (8-bits) generada procedimentalmente, con un botón dedicado en la interfaz para silenciarla (`Mute`) en tiempo real sin perder el foco del juego. Adicionalmente, cuenta con efectos de sonido clásicos de arcade.
 - **Modo Noche Inteligente:** Cuando el dinosaurio llega a puntajes altos y el juego invierte sus colores, toda la interfaz (botones, paneles, ranking) se adapta mágicamente al modo noche de forma instantánea.
 - **Cámara PiP (Picture-in-Picture):** El usuario puede ver qué está leyendo la IA en todo momento en una pequeña pantalla con un overlay visualizador de gestos.
@@ -64,6 +65,8 @@ Se abrirá una ventana de pantalla completa o ventana grande (1200x650 aprox.). 
 6. Para **REINTENTAR** si chocaste: Muestra la palma de tu mano abierta a la cámara. ✋
 7. Al finalizar tu turno, debes pulsar el botón **PAUSAR** y luego **NUEVO JUGADOR**. Si no realizas estos dos pasos, **tu puntaje no se guardará**. Si cierras la ventana sin presionar Nuevo Jugador, el récord se perderá.
 8. ¡El siguiente compañero puede tomar su turno!
+
+> **Tip:** Si querés probar el juego sin afectar el ranking, podés pulsar el botón **PRÁCTICA** en el panel de controles. Vas a poder jugar libremente. Para jugar en serio y registrar tu récord, volvé a apretarlo para salir del modo práctica.
 
 ---
 
